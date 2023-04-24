@@ -62,8 +62,8 @@ app.get("/products", (req: Request, res: Response)=>{
 })
 
 
-// Obtendo produtos por nome
-app.get("/products/pesquisa", (req: Request, res: Response)=>{
+// Obtendo prodtuos por nome
+app.get("/products/seacrh", (req: Request, res: Response)=>{
     const q = req.query.q as string
     const result = products.filter(
         (prod)=> prod.name.toLowerCase().includes(q.toLowerCase()))
@@ -73,7 +73,7 @@ app.get("/products/pesquisa", (req: Request, res: Response)=>{
 
     // Criando usuario 
 
-app.post("/users", (req: Request, res: Response)=>{
+    app.post("/users", (req: Request, res: Response)=>{
 
     const id = req.body.id as string
     const email = req.body.email as string
@@ -121,7 +121,6 @@ app.post("/users", (req: Request, res: Response)=>{
             const userId = req.body.userId as string
             const productId = req.body.productId as string
             const quantity = req.body.quantidadde as number
-            const category = req.body.categoria as CHOICE
             const totalPrice = req.body.totalPreço as number
         
             const newPurchase: TPurchase= {
@@ -136,4 +135,111 @@ app.post("/users", (req: Request, res: Response)=>{
         
             })
 
-         
+
+
+
+//Exercicio 1 
+
+// Pegar produtos por ID
+
+app.get("/products/:id", (req:Request, res: Response)=>{
+    const productId: string = req.params.id
+    const result = products.find((prod)=> prod.id === productId)
+
+    res.status(200).send(result)
+})
+
+
+
+//Retornar o array de compras por usuario
+app.get("/users/:id/purchases", (req: Request, res: Response)=>{
+
+    const userId: string = req.params.id
+
+    const result = purchases.find((item)=>
+    item.userId === userId)
+
+    res.status(200).send(result )
+
+})
+
+
+//Exercicio 2
+
+//Deletando usuario
+app.delete("/users/:id", (req: Request, res: Response)=>{
+
+    const id: string =  req.params.id
+    const index: number = users.findIndex((iten)=>iten.id === id)
+    let mgs: string
+    if(index >= 0){
+        users.splice(index, 1)
+        mgs = "Usuario deletado com sucesso"
+    }else{
+
+        mgs = "Usuario não econtrado"
+    }
+
+    res.status(200).send(mgs)
+
+})
+
+//Deletando produto
+
+app.delete("/products/:id", (req: Request, res: Response)=>{
+
+    const id : string = req.params.id
+    const index : number = products.findIndex((iten)=>  iten.id === id)
+
+    let mensagem:String
+    if(index >= 0){
+    products.splice(index, 1)
+    mensagem = "Produuto foi deletado com sucesso"
+    }else{
+        mensagem = "Produto não encontrado"
+    }
+
+    res.status(200).send(mensagem)
+})
+
+//Exercicio 3
+//Edit User by id
+
+app.get("/users/:id", (req: Request, res: Response)=>{
+
+    const id: string = req.params.id
+    const newEmail: string | undefined = req.body.newEmail
+    const newPassword: string | undefined = req.body.newPassword
+
+    const findUser = users.find((iten)=>iten.id === id)
+
+    if(findUser){
+        findUser.email = newEmail || findUser.email
+        findUser.password = newPassword || findUser.password
+
+    }
+
+    res.status(200).send("Editado com suceso")
+}
+
+)
+//Edit Product by id
+
+app.put("/products/:id", (req:Request, res: Response) =>{
+
+    const id: string = req.params.id
+    const newName: string = req.body.name
+    const newPrice : number = req.body.price
+    const newCategory : CHOICE = req.body.category
+
+    const findProduct = products.find((iten)=> iten.id === id)
+    if(findProduct){
+        findProduct.name = newName || findProduct.name
+        findProduct.price = newPrice || findProduct.price
+        findProduct.category = newCategory || findProduct.category
+    }
+
+    res.status(200).send(findProduct)
+
+})
+

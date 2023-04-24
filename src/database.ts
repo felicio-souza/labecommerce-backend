@@ -91,7 +91,8 @@ export function getProductById(idProcurado:string): TProduct[]{
         
         
     }
-  
+
+ 
   
     //PRODUTO função para buscar por produto baseado em um nome a lista de produtos
     export function queryProductsByName(q:string):TProduct[]{
@@ -111,4 +112,3 @@ export function getProductById(idProcurado:string): TProduct[]{
     export function getAllPurchasesFromUserId(userIdToSearch:string):TPurchase[] {
         return purchases.filter((purchase)=> purchase.userId === userIdToSearch)
     }
-       

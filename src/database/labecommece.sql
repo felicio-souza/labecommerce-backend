@@ -257,9 +257,10 @@ CREATE TABLE purchases(
     buyer TEXT NOT NULL,
     totalPrice REAL NOT NULL,
     createdAt TIMESTAMP NOT NULL DEFAULT (datetime('now', 'localtime')),
-    paid INTEGER NOT NULL
-   
-       
+    paid INTEGER NOT NULL,
+    FOREIGN KEY (buyer) REFERENCES users(id)
+
+          
 );
 
 --Inserindo purchases
@@ -272,9 +273,41 @@ VALUES
 -- Listando tabela
 SELECT * FROM purchases;
 
+CREATE TABLE purchases_products(
+purchase_id TEXT NOT NULL,
+product_id TEXT NOT NULL,
+quantity INTEGER NOT NULL
+
+);
+-- CREATE TABLE purchases_products(
+--     purchase_id TEXT NOT NULL,
+--     product_id TEXT NOT NULL,
+--     quantity INTEGER NOT NULL,
+--     FOREIGN KEY (purchase_id)
+--     REFERENCES purchases (id),
+--     FOREIGN KEY (product_id) 
+--     REFERENCES products (id)
+-- );
+
+INSERT INTO purchases_products(purchase_id, product_id, quantity)
+VALUES
+("pu001", "p001", 1),
+("pu002", "p002", 1),
+("pu003", "p003", 1);
+
+
 --Recriando os endpoint
 --Esta sendo criado no arquivo INDEX
 
 DROP TABLE users;
 DROP TABLE products;
 DROP TABLE purchases;
+DROP TABLE purchases_products;
+
+SELECT 
+*  
+FROM purchases_products
+INNER JOIN purchases
+ON purchases_products.purchase_id = purchases.id
+INNER JOIN products
+ON purchases_products.product_id = products.id;

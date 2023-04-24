@@ -1,4 +1,4 @@
--- Active: 1679514447433@@127.0.0.1@3306
+-- Active: 1681175004611@@127.0.0.1@3306
 
 --Criando a Tabela
 CREATE TABLE users(
@@ -154,4 +154,44 @@ WHERE id = "08";
 
 SELECT * FROM users
 INNER JOIN purchases
-ON purchases.buyer_id = users.id
+ON purchases.buyer_id = users.id;
+
+
+--Criando tabelas de relações
+
+CREATE TABLE purchases_products(
+purchase_id TEXT NOT NULL,
+product_id TEXT NOT NULL,
+quantity INTEGER NOT NULL);
+
+--Adicionando alguns itens
+
+INSERT INTO purchases_products(purchase_id, product_id, quantity)
+VALUES 
+("10", "21", 3),
+("11", "24", 2),
+("12", "22", 1);
+
+SELECT * FROM purchases_products;
+
+--Mostrando todos as colunas das tabelas em relação
+SELECT 
+purchases.id AS purchasesID,
+purchases.total_price AS purchasesTotalPrice,
+purchases.paid AS purchasesPaid,
+purchases.delivered_at AS purchasesDelivered,
+purchases.buyer_id AS purchasesBuyer,
+products.id AS productsID,
+products.name AS productsName,
+products.price AS productsPrice,
+products.category AS purchasesCategory
+  
+FROM purchases_products
+INNER JOIN purchases
+ON purchases_products.purchase_id = purchases.id
+INNER  JOIN products
+ON purchases_products.product_id = products.id;
+
+SELECT * FROM products;
+SELECT * FROM purchases;
+SELECT * FROM purchases_products;

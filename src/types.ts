@@ -1,22 +1,37 @@
-export type TUser= {
 
+
+
+export enum CHOICE {
+
+    ACCESSOIES = "acessorios",
+    CLOTHES_AND_SHOES = "roupas e calçados",
+    ELETRONICS = "eletronicos"
+}
+
+
+export type TUser = {
+
+  
 id: string
 email: string
 password: string
 }
+
 
 export type TProduct = {
 
     id: string
     name: string
     price: number
-    category: string
+    category: CHOICE
 }
 
-export type TPurchase = {
+export type TPurchase= {
 
     userId: string
     productId: string
     quantity: number
     totalPrice: number
 }
+
+

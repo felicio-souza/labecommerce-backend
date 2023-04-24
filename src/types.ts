@@ -34,4 +34,3 @@ export type TPurchase= {
     totalPrice: number
 }
 
-

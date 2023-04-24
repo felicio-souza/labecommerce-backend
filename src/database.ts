@@ -91,24 +91,24 @@ export function getProductById(idProcurado:string): TProduct[]{
         
         
     }
-
- 
+   
   
-    //PRODUTO função para buscar por produto baseado em um nome a lista de produtos
-    export function queryProductsByName(q:string):TProduct[]{
-        return products.filter((prod)=>prod.name.toLowerCase().includes(q.toLowerCase()))
-    }
-       
-    
-    
-    //PRODUTO função para cria uma nova compra na lista de purchases
-    export function createPurchase(userId:string, productId:string, quantity:number, totalPrice:number):string{
-        purchases.push({userId, productId, quantity, totalPrice})
-        return "Compra realizada com sucesso"
-    }
-    
-    
-    //PRODUTO função para busca todas as compras feitas baseado no id do usuário
-    export function getAllPurchasesFromUserId(userIdToSearch:string):TPurchase[] {
-        return purchases.filter((purchase)=> purchase.userId === userIdToSearch)
-    }
+//PRODUTO função para buscar por produto baseado em um nome a lista de produtos
+export function queryProductsByName(q:string):TProduct[]{
+    return products.filter((prod)=>prod.name.toLowerCase().includes(q.toLowerCase()))
+}
+   
+
+
+//PRODUTO função para cria uma nova compra na lista de purchases
+export function createPurchase(userId:string, productId:string, quantity:number, totalPrice:number):string{
+    purchases.push({userId, productId, quantity, totalPrice})
+    return "Compra realizada com sucesso"
+}
+
+
+//PRODUTO função para busca todas as compras feitas baseado no id do usuário
+export function getAllPurchasesFromUserId(userIdToSearch:string):TPurchase[] {
+    return purchases.filter((purchase)=> purchase.userId === userIdToSearch)
+}
+   

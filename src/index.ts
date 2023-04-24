@@ -2,7 +2,7 @@ import {createProduct, creatUser, getAllProducts, getAllUses, getProductById} fr
 // import {users} from "./database"
 import {purchases} from "./database"
 import {products} from "./database"
-import { CHOICE, TProduct, TPurchase, TUser } from "./types"
+import { CHOICE, TProduct, TProductq, TPurchase, TUser } from "./types"
 
 import express, {Request, Response} from "express"
 import cors from "cors"
@@ -558,10 +558,104 @@ app.get("/products/search", async(req: Request, res: Response) =>{
   }
 })
 
+//EDIT PRODUCT BY ID
+//Editando produto
+app.put("/products/:id", async(req: Request, res: Response) =>{
+
+ try {
+  const idToEdit = req.params.id
+  const { newId, newName, newPrice, newDescription, newImageUrl } = req.body;
+
+console.log(idToEdit)
+console.log(newDescription)
+console.log(newPrice)
+
+      if (newName === undefined || newPrice === undefined || newDescription === undefined || newImageUrl === undefined) {
+   res.status(400);
+  throw new Error("Dados inválidos");
+
+  };
+      if (newPrice! == undefined) {
+
+      if (typeof newPrice !== "number") {
+          res.status(400)
+          throw new Error("O campo 'price' deve ser number")
+      }
+
+      if (newPrice < 0) {
+          res.status(400)
+          throw new Error(" O campo 'price' não pode ser negativo")
+      }
+  }
+  
+  // if(newDescription.length < 6){
+  //   res.status(400)
+  //   throw new Error(" O campo 'descrition' deve possuir no minio 6 caracteres")
+  // }
+
+  // const [product]: {  id: string,  name: string, price: number, description: string, imageUrl: string }[]
+  // = db("products").where({id:idToEdit})
+  const [ product ] = await db("products").where({ id: idToEdit })
+
+  //       if (product) {
+	// 					await db.raw(`
+	// 						UPDATE products
+	// 						SET
+	// 							id = "${newId || product.id}",
+	// 							name = "${newName || product.name}",
+  //               price = "${newPrice || product.price}",
+  //               description = "${newDescription || product.description}",
+  //              	imageUrl = ${newImageUrl || product.imageUrl}
+	// 						WHERE
+	// 							id = "${idToEdit}";
+	// 					`)
+
+						await db("products").update({
+							id: newId || product.id,
+							name: newName || product.name,
+              price: newPrice || product.price,
+              description: newDescription || product.description,
+              imageUrl: newImageUrl || product.imageUrl
+						}).where({ id: idToEdit })
+  // if(product){
+
+  //   const updatedProduct = {
+  //     id: newId || product.id,
+  //     name: newName || product.name,
+  //     price: newPrice || product.price,
+  //     description: newDescription || product.description,
+  //     imageUrl: newImageUrl || product.imageUrl,
+      
+  //   }
+         
+    // await db("products").update(updatedProduct).where({ id: idToEdit })
+
+//   }  else {
+//     res.status(404)
+//     throw new Error("'id' não encontrada")
+// }
+
+res.status(200).send({ message: "Atualização realizada com sucesso" })
+
+} catch (error) {
+  console.log(error)
+
+  if (req.statusCode === 200) {
+      res.status(500)
+  }
+
+  if (error instanceof Error) {
+      res.send(error.message)
+  } else {
+      res.send("Erro inesperado")
+  }
+}
+})
+
 //Criando novos endpoints
 
 //CREATE USER
-
+//Refatorando usando QUERY BUILDER (modo abreviado)
 app.post("/users", async (req: Request, res: Response) =>{
 
   try {
@@ -592,11 +686,17 @@ app.post("/users", async (req: Request, res: Response) =>{
       throw new Error("Já existe uma conta com esse id");
     }
  
-    const newUser = await db.raw(`
-    INSERT INTO users(id, name, email, password)
-    VALUES ("${id}", "${name}", "${email}", "${password}");`);
-    res.status(201).send({message: "Cadastro realizado com sucesso"});
- 
+    // const newUser = await db.raw(`
+    // INSERT INTO users(id, name, email, password)
+    // VALUES ("${id}", "${name}", "${email}", "${password}");`);
+    // res.status(201).send({message: "Cadastro realizado com sucesso"});
+    const newUser = {
+
+      id: id,
+      name: name,
+      email: email,
+      password: password
+    }
         
     await db("users").insert(newUser)
     res.status(201).send({message: "Cadastro realizado com sucesso"});
@@ -607,7 +707,7 @@ app.post("/users", async (req: Request, res: Response) =>{
 });
 
 //CREATE PRODUCT
-
+//Refatorando usando QUERY BUILDER (modo abreviado)
 app.post("/products", async (req: Request, res: Response) =>{
 
   try {
@@ -642,11 +742,20 @@ app.post("/products", async (req: Request, res: Response) =>{
       throw new Error("Já existe um produto com esse id");
     }
   
-    const newProduct = await db.raw(`
-    INSERT INTO products(id, name, price, description, imageUrl)
-    VALUES ("${id}", "${name}", "${price}", "${description}", "${imageUrl}");`);
-    res.status(201).send({message: "Produto cadastrado com sucesso"});
+    // const newProduct = await db.raw(`
+    // INSERT INTO products(id, name, price, description, imageUrl)
+    // VALUES ("${id}", "${name}", "${price}", "${description}", "${imageUrl}");`);
+    // res.status(201).send({message: "Produto cadastrado com sucesso"});
 
+    const newProduct = {
+      
+      id: id, 
+      name: name,
+      price: price, 
+      description: description, 
+      imageUrl: imageUrl,
+
+  }
     await db("products").insert(newProduct)
     res.status(201).send({message: "Produto cadastrado com sucesso"});
 
@@ -684,7 +793,7 @@ app.post("/purchases", async (req: Request, res: Response) =>{
     }
   
     const newPuchases = await db.raw(`
-    INSERT INTO users(id, buyer, totalPrice, paid)
+    INSERT INTO purchases(id, buyer, totalPrice, paid)
     VALUES ("${id}", "${buyer}", "${totalPrice}", "${paid}");`);
     res.status(201).send({message: "Compra cadastrada com sucesso"});
 
@@ -693,6 +802,26 @@ app.post("/purchases", async (req: Request, res: Response) =>{
   }
 });
 
+//DELETANDO PURCHASE
+app.delete("/purchases/:id", async (req: Request, res: Response) => {
+  try {
+      const idToDelete = req.params.id
+      
+      const [ purchase ] = await db("purchases").where({ id: idToDelete })
+
+      if (!purchase) {
+          res.status(404)
+          throw new Error("'id' não encontrada")
+      }
+
+      await db("purchases").del().where({ id: idToDelete })
+
+      res.status(200).send({ message: "Compra deletada com sucesso" })
+
+     } catch (error: any) {
+      res.status(400).send(error.message)
+  }
+})
 
 //GET PRODUCTS BY ID
 //Refatorando usando QUERY BUILDER (modo abreviado)
@@ -718,7 +847,6 @@ app.get("/products/:id", async(req: Request, res: Response) =>{
 
 //GET USER PURCHASES BY USER ID
 
-
 app.get("/users/:id/purchases", async(req: Request, res: Response) =>{
 
   try {
@@ -741,3 +869,45 @@ app.get("/users/:id/purchases", async(req: Request, res: Response) =>{
   }
 })
  
+//Criando endpoint com query builder
+
+// GET PURCHASES BY ID
+// Refatorando para retonar a lista de produtos com relação as compras 
+
+app.get("/purchases/:id", async(req: Request, res: Response) => {
+  try {
+      const id = req.params.id;      
+      const purchase = await db("purchases").where({id}).first();
+      const buyer = await db("users").where({id: purchase.buyer}).first();
+
+  if (!purchase) {
+      return res.status(404).send("Compra não encontrada");
+  }
+    
+      
+  if (!buyer) {
+      return res.status(404).send("Comprador não encontrado");
+  }
+    
+      const productsList = await db("products")
+      await db('products')
+      .join('purchases_products', 'purchases_products.product_id', '=', 'products.id')
+      .where({ 'purchases_products.purchase_id': id })
+     
+      const infoPurchaseUser = {
+      purchaseId: purchase.id,
+      totalPrice: purchase.totalPrice,
+      createdAt: purchase.createdAt,
+      paid: purchase.paid,
+      buyerId: buyer.id,
+      emailBuyer: buyer.email,
+      nameBuyer: buyer.name,
+      productsList: productsList
+  };
+      res.status(200).send(infoPurchaseUser);
+  } catch (error: any) {
+      res.status(400).send(error.message);
+  }
+});
+  
+

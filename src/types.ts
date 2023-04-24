@@ -26,6 +26,16 @@ export type TProduct = {
     category: CHOICE
 }
 
+export type TProductq = {
+
+    id: string
+    name: string
+    price: number
+    description: string
+    imageUrl: string
+}
+
+
 export type TPurchase= {
 
     userId: string
